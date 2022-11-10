@@ -1,12 +1,17 @@
-// import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
+
 import { fetchCurrentUser } from 'redux/authSlice';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+// import { errorMessage } from '../redux/contactsSlice';
 import { Layout } from './Layout/Layout';
+
 import { lazy } from 'react';
 import PrivateRoute from './PrivateRoute/PrivateRoute';
 import { PublicRoute } from './PublicRoute/PublicRoute';
+import { Empty } from '../Pages/Empty/Empty';
 
 const Home = lazy(() => import('../Pages/Home/Home'));
 const Register = lazy(() => import('../Pages/Register/Register'));
@@ -15,15 +20,14 @@ const Phonebook = lazy(() => import('../Pages/Phonebook/Phonebook'));
 
 export default function App() {
   const dispatch = useDispatch();
-  // const error = useSelector(errorMessage);
   useEffect(() => {
-    console.log('fethcing current user');
+    // console.log('fethcing current user');
     dispatch(fetchCurrentUser());
   }, [dispatch]);
 
   return (
     <>
-      {/* <ToastContainer autoClose={1250} /> */}
+      <ToastContainer autoClose={1800} />
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
@@ -51,11 +55,10 @@ export default function App() {
               </PrivateRoute>
             }
           />
-          <Route path="*" element={<div>404</div>} />
+          <Route path="*" element={<Empty />} />
         </Route>
       </Routes>
+      {/* {error !== null && <ErrorMessage>{error}</ErrorMessage>} */}
     </>
-    //
-    //   {error !== null && <ErrorMessage>{error}</ErrorMessage>}
   );
 }

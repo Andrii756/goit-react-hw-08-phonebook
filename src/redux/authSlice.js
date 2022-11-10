@@ -17,38 +17,28 @@ const token = {
 
 export const register = createAsyncThunk('auth/register',
     async credentials => {
-        // console.log(credentials);
-        try {
+        console.log(credentials);
             const { data } = await axios.post('/users/signup', credentials);
             token.set(data.token);
             return data
-        } catch (error) {
-            // console.log(error)
-        }
     }
 );
 
 export const login = createAsyncThunk('auth/login',
     async credentials => {
         // console.log(credentials);
-        try {
             const { data } = await axios.post('/users/login', credentials);
             token.set(data.token);
             return data
-        } catch (error) {
             // console.log(error);
-        }
     }
 );
 
 export const logout = createAsyncThunk('auth/logout',
     async () => { 
-        try {
             await axios.post('/users/logout');
             token.unset();
-        } catch (error) {
             // console.log(error);
-        }
     }
 )
 
@@ -61,12 +51,10 @@ export const fetchCurrentUser = createAsyncThunk('auth/refresh',
             return thunkApi.rejectWithValue();
         }
         token.set(persistedToken);
-        try {
-            const { data } = await axios.get('/users/current');
-            return data;
-        } catch (error) {
+
+        const { data } = await axios.get('/users/current');
+        return data;
             // console.log(error);
-        }
 
     }
 )
@@ -77,33 +65,71 @@ const initialState = {
     user: { name: null, email: null },
     token: null,
     isLoggedIn: false,
-    isRefreshingUser: false
+    isRefreshingUser: false,
+    isLoading: false,
+    error: null
 }
 
 const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-     
+       resetError(state, _) { 
+            state.error = null;
+    }
      },
-     extraReducers: {
+    extraReducers: {
+        [register.pending]: (state, _) => { 
+            state.isLoading = true;
+             state.error = null;
+            
+         },
          [register.fulfilled]: (state, action) => { 
-             console.log('action ', action);
+            //  console.log('action ', action);
+             state.isLoading = false;
              state.user = action.payload.user;
              state.token = action.payload.token;
              state.isLoggedIn = true;
+             state.error = null;
+        },
+        [register.rejected]: (state, action) => { 
+            // console.log(action);
+            state.isLoading = false;
+            state.error = action.error.message;
+        },
+            [login.pending]: (state, _) => { 
+                state.isLoading = true;
+             state.error = null;
+                
          },
           [login.fulfilled]: (state, action) => { 
-             console.log('action ', action);
+            //  console.log('action ', action);
              state.user = action.payload.user;
              state.token = action.payload.token;
-             state.isLoggedIn = true;
+              state.isLoggedIn = true;
+                state.isLoading = false;
+              
+        },
+           [login.rejected]: (state, action) => { 
+            // console.log(action);
+            state.isLoading = false;
+            state.error = action.error.message;
+        },
+            [logout.pending]: (state, _) => { 
+            //  console.log('action ', action);
+                state.isLoading = true;
+                
          },
           [logout.fulfilled]: (state, _) => { 
             //  console.log('action ', action);
               state.user = { name: null, email: null };
+              state.isLoading = false;
               state.token = null;
               state.isLoggedIn = false;
+        },
+                  [logout.rejected]: (state, _) => { 
+            //  console.log('action ', action);
+              state.isLoading = false;
          },
         [fetchCurrentUser.pending]: (state) => { 
             //  console.log('action ', action);
@@ -122,6 +148,7 @@ const authSlice = createSlice({
      }
 })
 
+export const { resetError } = authSlice.actions
 export default authSlice.reducer
 
 // Selectors
@@ -129,6 +156,8 @@ export const getIsLoggedIn = state => state.auth.isLoggedIn;
 export const getUserName = state => state.auth.user.name;
 export const getUserEmail = state => state.auth.user.email;
 export const getIsRefreshingUser = state => state.auth.isRefreshingUser;
+export const errorMessageAuth = state => state.auth.error;
+export const getIsLoadingAuth = state => state.auth.isLoading;
 
 
 

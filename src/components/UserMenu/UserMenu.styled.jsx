@@ -30,6 +30,9 @@ export const LogoutBtn = styled.button`
   border-radius: 14px;
   cursor: pointer;
   transition: opacity 400ms ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   &:hover,
   &:focus,
   &:active {

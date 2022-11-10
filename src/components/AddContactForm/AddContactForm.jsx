@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { TailSpin } from 'react-loader-spinner';
 import { toast } from 'react-toastify';
 
-import { getContacts, addContact, isAdding } from '../../redux/contactsSlice';
+import { getContacts, addContact, isAdding } from 'redux/contactsSlice';
 
 import { nanoid } from 'nanoid';
 import {
@@ -15,6 +15,9 @@ import {
 } from './AddContactForm.styled';
 
 export default function AddContactForm() {
+  // const isSuccess = useSelector(addSuccessfull);
+  // console.log(isSuccess);
+
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
 
@@ -27,6 +30,7 @@ export default function AddContactForm() {
 
   const pushDataToArr = contact => {
     dispatch(addContact(contact));
+    toast.success(`Contact "${contact.name}" has been succesfully added`);
   };
 
   const formSubmitHandler = data => {
@@ -38,11 +42,10 @@ export default function AddContactForm() {
     );
 
     if (isTheSame) {
-      alert(`${isTheSame.name} is already in contacts`);
+      toast.warning(`Contact "${isTheSame.name}" is already in contacts`);
       return;
     }
     pushDataToArr(data);
-    toast.success(`Contact "${data.name}" has been succesfully added`);
     formReset();
   };
 
@@ -68,8 +71,6 @@ export default function AddContactForm() {
 
   const handleSubmit = e => {
     e.preventDefault();
-    // console.log(e);
-    // console.log({ name, number });
     formSubmitHandler({ name, number });
   };
 

@@ -6,6 +6,7 @@ export const LoaderContainer = styled.div`
   width: 100vw;
   height: 100vh;
   pointer-events: none;
+  z-index: 999;
   & > div {
     position: absolute;
     top: 50%;

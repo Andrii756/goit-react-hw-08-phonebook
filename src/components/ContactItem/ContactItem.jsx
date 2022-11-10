@@ -3,11 +3,13 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { TailSpin } from 'react-loader-spinner';
 
 import { AiOutlineDelete, AiFillEdit, AiOutlineClose } from 'react-icons/ai';
 
 import { deleteContact } from '../../redux/contactsSlice';
-import { isLoading } from '../../redux/contactsSlice';
+import { isDeleting, isUpdating } from '../../redux/contactsSlice';
+
 import {
   Card,
   CardText,
@@ -26,7 +28,8 @@ const ContactItem = ({ id, name, number }) => {
   };
 
   const dispatch = useDispatch();
-  const isPending = useSelector(isLoading);
+  const isPending = useSelector(isDeleting);
+  const isUpdatingContact = useSelector(isUpdating);
 
   const removeContact = (toDeleteId, name) => {
     dispatch(deleteContact(toDeleteId));
@@ -40,7 +43,11 @@ const ContactItem = ({ id, name, number }) => {
         <span>{number}</span>
       </CardText>
       <Buttons>
-        <DeleteBtn type="button" onClick={toggleModal}>
+        <DeleteBtn
+          type="button"
+          onClick={toggleModal}
+          disabled={isUpdatingContact}
+        >
           <span>Edit&nbsp;</span>
           <AiFillEdit />
         </DeleteBtn>
@@ -49,7 +56,20 @@ const ContactItem = ({ id, name, number }) => {
           disabled={isPending}
           onClick={() => removeContact(id, name)}
         >
-          <AiOutlineDelete />
+          {isPending ? (
+            <TailSpin
+              height="12"
+              width="12"
+              color="#e3e4ed"
+              ariaLabel="tail-spin-loading"
+              radius="1"
+              wrapperStyle={{}}
+              wrapperClass=""
+              visible={true}
+            />
+          ) : (
+            <AiOutlineDelete />
+          )}
         </DeleteBtn>
       </Buttons>
 
@@ -63,6 +83,7 @@ const ContactItem = ({ id, name, number }) => {
               contactName={name}
               contactNumber={number}
               contactId={id}
+              onClose={toggleModal}
             />
           </EditContainer>
         </Modal>

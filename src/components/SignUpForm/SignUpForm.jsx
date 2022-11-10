@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { register } from 'redux/authSlice';
 import {
   FormWrapper,
@@ -17,9 +17,14 @@ import {
 } from '../LoginForm/LoginForm.styled';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 
+import { Loader } from 'components/Loader/Loader';
+import { getIsLoadingAuth } from 'redux/authSlice';
+
 import pandaRegister from '../../images/cat-svgrepo-com.svg';
 
 export const SignUpForm = () => {
+  const isPending = useSelector(getIsLoadingAuth);
+
   const dispatch = useDispatch();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -34,11 +39,11 @@ export const SignUpForm = () => {
     }
   };
 
-  const resetForm = () => {
-    setName('');
-    setEmail('');
-    setPassword('');
-  };
+  // const resetForm = () => {
+  //   setName('');
+  //   setEmail('');
+  //   setPassword('');
+  // };
   const handleChange = ({ target: { name, value } }) => {
     switch (name) {
       case 'name':
@@ -54,13 +59,13 @@ export const SignUpForm = () => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    // console.log({ name, email, password });
     dispatch(register({ name, email, password }));
-    resetForm();
+    // resetForm();
   };
 
   return (
     <FormWrapper>
+      {isPending && <Loader />}
       <FormContainer>
         <ImageWrapper>
           <img src={pandaRegister} width="64" alt="User avatar" />
